@@ -2,7 +2,7 @@
 
 Biblioteca Spring Boot para registrar eventos de auditoria de métodos de negócio por meio da anotação `@AuditLog`. O starter intercepta a execução do método, coleta informações da operação e publica um registro estruturado em JSON no log da aplicação.
 
-> **Versão documentada:** `0.0.4`  
+> **Versão documentada:** `0.0.5`  
 > **GroupId:** `com.auditlog.starters`  
 > **ArtifactId:** `audit-log-starter`
 
@@ -91,7 +91,7 @@ Quando o artefato estiver publicado no repositório Maven corporativo, configure
 <dependency>
     <groupId>com.auditlog.starters</groupId>
     <artifactId>audit-log-starter</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 
@@ -109,7 +109,7 @@ Na raiz do módulo/projeto consumidor, crie a pasta `libs-repo` e copie para ela
 meu-projeto/
 ├── pom.xml
 ├── libs-repo/
-│   └── audit-log-starter-0.0.4.jar
+│   └── audit-log-starter-0.0.5.jar
 └── src/
     └── main/
         └── resources/
@@ -135,7 +135,7 @@ Mantenha também a dependência:
 <dependency>
     <groupId>com.auditlog.starters</groupId>
     <artifactId>audit-log-starter</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 
@@ -147,9 +147,9 @@ Execute o comando abaixo, ajustando a versão e os caminhos para a estrutura rea
 mvn deploy:deploy-file \
   -DgroupId=com.auditlog.starters \
   -DartifactId=audit-log-starter \
-  -Dversion=0.0.4 \
+  -Dversion=0.0.5 \
   -Dpackaging=jar \
-  -Dfile=./libs-repo/audit-log-starter-0.0.4.jar \
+  -Dfile=./libs-repo/audit-log-starter-0.0.5.jar \
   -Durl=file:./libs-repo \
   -DrepositoryId=local-libs-repo
 ```
@@ -157,7 +157,7 @@ mvn deploy:deploy-file \
 No Windows, o comando pode ser executado em uma única linha:
 
 ```bat
-mvn deploy:deploy-file -DgroupId=com.auditlog.starters -DartifactId=audit-log-starter -Dversion=0.0.4 -Dpackaging=jar -Dfile=./libs-repo/audit-log-starter-0.0.4.jar -Durl=file:./libs-repo -DrepositoryId=local-libs-repo
+mvn deploy:deploy-file -DgroupId=com.auditlog.starters -DartifactId=audit-log-starter -Dversion=0.0.5 -Dpackaging=jar -Dfile=./libs-repo/audit-log-starter-0.0.5.jar -Durl=file:./libs-repo -DrepositoryId=local-libs-repo
 ```
 
 Atenção aos parâmetros:
@@ -242,7 +242,7 @@ A comparação procura o texto normalizado configurado dentro do nome do campo. 
 
 ### 4.3. Propriedades
 
-A versão `0.0.4` não declara propriedades externas próprias (`@ConfigurationProperties`) para habilitar/desabilitar a auditoria ou configurar destino, nível de log, formato ou comportamento de mascaramento.
+A versão `0.0.5` não declara propriedades externas próprias (`@ConfigurationProperties`) para habilitar/desabilitar a auditoria ou configurar destino, nível de log, formato ou comportamento de mascaramento.
 
 A seleção das operações auditadas é feita diretamente pela anotação `@AuditLog`.
 
@@ -489,9 +489,25 @@ audit-log-starter/
             └── org.springframework.boot.autoconfigure.AutoConfiguration.imports
 ```
 
-## 13. Versionamento
+## 13. Testes e cobertura
 
-A versão documentada neste README é `0.0.4`, conforme o `pom.xml` fornecido.
+Execute a suíte automatizada com Maven:
+
+```bash
+mvn test
+```
+
+Os testes usam JUnit 5 e Mockito. O JaCoCo gera o relatório de cobertura em:
+
+```text
+target/site/jacoco/index.html
+```
+
+A suíte cobre os componentes de mascaramento, inspeção de objetos, aspecto de auditoria, carregamento de campos sensíveis, resolução de autenticação, configuração, modelos e publicação.
+
+## 14. Versionamento
+
+A versão documentada neste README é `0.0.5`, conforme o `pom.xml` fornecido.
 
 Ao publicar uma nova versão:
 
@@ -501,7 +517,7 @@ Ao publicar uma nova versão:
 4. Publique no repositório Maven corporativo.
 5. Atualize este README com as alterações de API, configuração e compatibilidade.
 
-## 14. Limitações conhecidas da versão documentada
+## 15. Limitações conhecidas da versão documentada
 
 - O publisher padrão escreve no log SLF4J; não há integração nativa com banco, Kafka ou outro destino externo.
 - Não há propriedades próprias para ligar/desligar globalmente a auditoria ou configurar o publisher.
@@ -513,4 +529,4 @@ Ao publicar uma nova versão:
 
 ---
 
-**Documento elaborado com base no código-fonte e no `pom.xml` da versão `0.0.4` enviados para análise.** Endereço do repositório GIS, instruções corporativas de credenciais e política oficial de publicação Maven devem ser preenchidos pela equipe responsável pelo ambiente.
+**Documento atualizado para a versão `0.0.5`, conforme o `pom.xml` atual.** Endereço do repositório GIS, instruções corporativas de credenciais e política oficial de publicação Maven devem ser preenchidos pela equipe responsável pelo ambiente.
