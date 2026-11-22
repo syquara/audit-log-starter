@@ -102,7 +102,7 @@ public class AuditLogAspect {
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
 		if(attributes != null) {
-			requestId = attributes == null ? "0" : attributes.getRequest().getRequestId();
+			requestId = attributes.getRequest().getRequestId();
 			
 			HttpServletRequest request = attributes.getRequest();
 		    

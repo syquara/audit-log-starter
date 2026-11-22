@@ -12,7 +12,7 @@ public final class MaskDetector {
 
     private static final Pattern EMAIL = Pattern.compile( "^[A-Za-z0-9+_.-]+@(.+)$");
 
-    private static final Pattern PHONE = Pattern.compile("^\\d{10,11}$");
+    private static final Pattern PHONE = Pattern.compile("^\\d{9,11}$");
 
     private static final Pattern JWT = Pattern.compile("^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$");
     

@@ -62,8 +62,7 @@ public final class AuditObjectInspector {
 
     private static boolean isSimpleType(Class<?> clazz) {
 
-        return clazz.isPrimitive()
-                || clazz.equals(String.class)
+        return clazz.equals(String.class)
                 || Number.class.isAssignableFrom(clazz)
                 || Boolean.class.isAssignableFrom(clazz)
                 || Temporal.class.isAssignableFrom(clazz)
