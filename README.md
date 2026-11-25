@@ -2,8 +2,8 @@
 
 Biblioteca Spring Boot para registrar eventos de auditoria de métodos de negócio por meio da anotação `@AuditLog`. O starter intercepta a execução do método, coleta informações da operação e publica um registro estruturado em JSON no log da aplicação.
 
-> **Versão documentada:** `0.0.5`  
-> **GroupId:** `com.auditlog.starters`  
+> **Versão documentada:** `0.2.0`  
+> **GroupId:** `com.siquaras`  
 > **ArtifactId:** `audit-log-starter`
 
 ## 1. Visão geral
@@ -89,9 +89,9 @@ Quando o artefato estiver publicado no repositório Maven corporativo, configure
 
 ```xml
 <dependency>
-    <groupId>com.auditlog.starters</groupId>
+    <groupId>com.siquaras</groupId>
     <artifactId>audit-log-starter</artifactId>
-    <version>0.0.5</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -109,7 +109,7 @@ Na raiz do módulo/projeto consumidor, crie a pasta `libs-repo` e copie para ela
 meu-projeto/
 ├── pom.xml
 ├── libs-repo/
-│   └── audit-log-starter-0.0.5.jar
+│   └── audit-log-starter-0.2.0.jar
 └── src/
     └── main/
         └── resources/
@@ -133,9 +133,9 @@ Mantenha também a dependência:
 
 ```xml
 <dependency>
-    <groupId>com.auditlog.starters</groupId>
+    <groupId>com.siquaras</groupId>
     <artifactId>audit-log-starter</artifactId>
-    <version>0.0.5</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -145,11 +145,11 @@ Execute o comando abaixo, ajustando a versão e os caminhos para a estrutura rea
 
 ```bash
 mvn deploy:deploy-file \
-  -DgroupId=com.auditlog.starters \
+  -DgroupId=com.siquaras \
   -DartifactId=audit-log-starter \
-  -Dversion=0.0.5 \
+  -Dversion=0.2.0 \
   -Dpackaging=jar \
-  -Dfile=./libs-repo/audit-log-starter-0.0.5.jar \
+  -Dfile=./libs-repo/audit-log-starter-0.2.0.jar \
   -Durl=file:./libs-repo \
   -DrepositoryId=local-libs-repo
 ```
@@ -157,7 +157,7 @@ mvn deploy:deploy-file \
 No Windows, o comando pode ser executado em uma única linha:
 
 ```bat
-mvn deploy:deploy-file -DgroupId=com.auditlog.starters -DartifactId=audit-log-starter -Dversion=0.0.5 -Dpackaging=jar -Dfile=./libs-repo/audit-log-starter-0.0.5.jar -Durl=file:./libs-repo -DrepositoryId=local-libs-repo
+mvn deploy:deploy-file -DgroupId=com.siquaras -DartifactId=audit-log-starter -Dversion=0.2.0 -Dpackaging=jar -Dfile=./libs-repo/audit-log-starter-0.2.0.jar -Durl=file:./libs-repo -DrepositoryId=local-libs-repo
 ```
 
 Atenção aos parâmetros:
@@ -192,7 +192,8 @@ O `pom.xml` do starter declara:
 
 - `spring-boot-starter-web` — versão 3.5.16.
 - `spring-boot-starter-aop` — versão 3.5.16.
-- `jackson-databind` — versão 2.23.0.
+- `jackson-databind` — versão gerenciada pelo BOM do Spring Boot 3.5.16.
+- `h2` — versão 2.5.252, usado pela captura temporária de logs.
 - `lombok` — versão 1.18.48, com escopo `provided`.
 
 Avalie o gerenciamento de versões do projeto consumidor para evitar conflitos de dependências, especialmente se ele utilizar um BOM ou parent corporativo.
@@ -206,6 +207,8 @@ A biblioteca registra `AuditAutoConfiguration` em:
 ```text
 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
 ```
+
+O recurso de captura temporária de logs e exceções também é ativado automaticamente por `ApiExceptionLoggingConfiguration` em aplicações Servlet.
 
 Assim, em uma aplicação Spring Boot compatível, a configuração é carregada automaticamente quando o starter está no classpath. Ela registra:
 
@@ -242,7 +245,7 @@ A comparação procura o texto normalizado configurado dentro do nome do campo. 
 
 ### 4.3. Propriedades
 
-A versão `0.0.5` não declara propriedades externas próprias (`@ConfigurationProperties`) para habilitar/desabilitar a auditoria ou configurar destino, nível de log, formato ou comportamento de mascaramento.
+A versão `0.2.0` não declara propriedades externas próprias (`@ConfigurationProperties`) para habilitar/desabilitar a auditoria ou configurar destino, nível de log, formato ou comportamento de mascaramento.
 
 A seleção das operações auditadas é feita diretamente pela anotação `@AuditLog`.
 
@@ -253,7 +256,7 @@ A seleção das operações auditadas é feita diretamente pela anotação `@Aud
 Importe:
 
 ```java
-import com.auditlog.starter.annotation.AuditLog;
+import com.siquaras.auditlog.annotation.AuditLog;
 ```
 
 Exemplo:
@@ -403,6 +406,71 @@ O destino final depende da configuração de logging da aplicação consumidora 
 
 A interface `AuditPublisher` permite substituir a implementação padrão por um bean próprio, caso a aplicação precise encaminhar os eventos para outro destino. A implementação de integração com sistemas externos não faz parte desta versão.
 
+### 8.1. Captura temporária de logs e exceções
+
+A auto-configuração disponibiliza uma sessão H2 em memória, iniciada manualmente e desligada por padrão. A integração de captura de logs desta versão usa Logback; o endpoint de status informa `logCaptureAvailable` e `loggingBackend`.
+
+Inicie a captura por 120 segundos (duração padrão) ou informe uma duração de 1 a 3600 segundos:
+
+```http
+PUT /auditLog/exceptionCapture
+Content-Type: application/json
+
+{
+  "enabled": true,
+  "levels": ["INFO", "ERROR"],
+  "durationSeconds": 120
+}
+```
+
+Os níveis aceitos são `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR` e `ALL`. A lista de níveis deve conter ao menos um valor. Consulte o estado da sessão com `GET /auditLog/exceptionCapture` e os registros com `GET /auditLog/exceptionCapture/events?limit=100` (limite de 1 a 1000). Envie `{"enabled": false}` ao `PUT` para encerrar antes do prazo.
+
+Cada registro contém o horário de captura e do log, nível, logger, thread, classe e método de origem, mensagem e, quando disponível, tipo, mensagem e stack trace da exceção. A origem é obtida do stack trace da exceção ou do caller data do Logback; os eventos observados pelo resolver MVC também usam a classe/método do handler quando a pilha não identifica código da aplicação. Esses campos aparecem como `sourceClass` e `sourceMethod`. Exceções observadas pelo resolver MVC também carregam metadados da requisição. `eventJson` é preenchido quando a mensagem inteira é um objeto ou array JSON; mensagens prefixadas como `AUDIT=...` permanecem disponíveis no campo `message`.
+
+A fila de gravação aceita até 256 eventos pendentes; eventos recusados são contabilizados em `droppedEvents`. O texto da mensagem é limitado a 32 KiB UTF-8, a mensagem da exceção a 8 KiB e o stack trace a 64 KiB. A sessão retém no máximo 10000 registros e 32 MiB estimados, removendo os mais antigos para manter os mais recentes. Ao parar ou expirar, o banco em memória é encerrado e os dados deixam de estar disponíveis.
+
+#### Endpoints disponíveis
+
+As rotas usam `camelCase` e são registradas automaticamente em aplicações Spring MVC/Servlet. A captura começa desabilitada. Proteja estes endpoints com a política de autenticação/autorização da aplicação consumidora.
+
+| Método | Endpoint | Função |
+|---|---|---|
+| `GET` | `/auditLog/exceptionCapture` | Consulta o estado da captura e seus contadores. |
+| `PUT` | `/auditLog/exceptionCapture` | Inicia ou encerra a captura temporária. |
+| `GET` | `/auditLog/exceptionCapture/events?limit=100` | Consulta os eventos mais recentes; `limit` aceita valores de 1 a 1000 e, por padrão, é 100. |
+
+Exemplo de resposta do `GET /auditLog/exceptionCapture` e do `PUT`:
+
+```json
+{
+  "enabled": true,
+  "levels": ["INFO", "ERROR"],
+  "expiresAt": "2026-11-24T15:30:00Z",
+  "storedCount": 8,
+  "storedBytes": 4096,
+  "droppedEvents": 0,
+  "writeFailures": 0,
+  "logCaptureAvailable": true,
+  "loggingBackend": "logback"
+}
+```
+
+O `PUT` exige `enabled`. Para iniciar, envie também pelo menos um nível aceito (`TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR` ou `ALL`). `durationSeconds` é opcional; quando omitido, vale 120 segundos. O intervalo permitido é de 1 a 3600 segundos. Para encerrar imediatamente, envie:
+
+```json
+{
+  "enabled": false
+}
+```
+
+O `GET .../events` retorna uma lista ordenada do evento mais recente para o mais antigo. Cada item inclui `id`, `capturedAt`, `eventType`, `level`, `loggerName`, `threadName`, `message`, `exceptionType`, `exceptionMessage`, `stackTrace`, `requestMethod`, `requestPath`, `requestId`, `handler`, `sourceClass`, `sourceMethod` e `eventJson`. Campos sem informação disponível podem ser `null`. `eventJson` só é preenchido quando a mensagem inteira é um objeto ou array JSON.
+
+Respostas de erro: `400 Bad Request` para payload ou limite inválido; `503 Service Unavailable` quando a captura não pode ser iniciada/consultada. Ao parar ou expirar, a base H2 temporária é encerrada e sua lista de eventos volta vazia.
+
+### 8.2. Substituição do publisher
+
+A aplicação consumidora pode fornecer seu próprio bean `AuditPublisher`; nesse caso, o publisher padrão recua. Falhas de publicação ou sanitização são registradas sem substituir o retorno ou a exceção original do método de negócio.
+
 ## 9. Tratamento de erros e comportamento
 
 - Se o método auditado lançar uma `Exception`, o aspecto publica um evento com `sucesso = false`, a mensagem da exceção e o tempo de execução; em seguida, relança a exceção.
@@ -410,7 +478,7 @@ A interface `AuditPublisher` permite substituir a implementação padrão por um
 - A resolução de autenticação trata falhas de leitura como não impeditivas e retorna os valores disponíveis/padrão.
 - A falha ao carregar `sensitive_fields.txt` é registrada no log, mas não interrompe por si só a criação do bean.
 
-**Limitação da implementação atual:** o bloco de tratamento do aspecto captura `Exception`, não `Throwable`. Erros da JVM (`Error`) não seguem necessariamente o mesmo fluxo de publicação de falha. Além disso, uma exceção lançada durante a publicação de auditoria dentro do aspecto pode afetar a chamada de negócio se não for absorvida pela implementação de `AuditPublisher`.
+O aspecto registra falhas de negócio (incluindo `Error`) e relança a mesma falha. Falhas comuns durante a construção ou publicação do evento de auditoria são registradas sem alterar o resultado do método de negócio. Erros fatais da JVM ainda podem interromper a aplicação.
 
 ## 10. Boas práticas de adoção
 
@@ -461,14 +529,24 @@ audit-log-starter/
 ├── pom.xml
 └── src/
     └── main/
-        ├── java/com/auditlog/starter/
+        ├── java/com/siquaras/auditlog/
         │   ├── annotation/
         │   │   └── AuditLog.java
         │   ├── aspect/
         │   │   └── AuditLogAspect.java
         │   ├── configuration/
         │   │   ├── AuditAutoConfiguration.java
+        │   │   ├── ApiExceptionLoggingConfiguration.java
         │   │   └── LoadSensitiveFields.java
+        │   ├── controller/
+        │   │   └── ApiExceptionCaptureController.java
+        │   ├── dto/
+        │   │   ├── CaptureRequest.java
+        │   │   ├── CaptureStatus.java
+        │   │   └── CapturedApiLogRecord.java
+        │   ├── logging/
+        │   │   ├── ApiErrorLogCaptureAppender.java
+        │   │   └── ApiErrorLogCaptureAppenderRegistrar.java
         │   ├── mask/
         │   │   ├── AuditMaskEngine.java
         │   │   ├── AuditObjectInspector.java
@@ -476,13 +554,21 @@ audit-log-starter/
         │   │   └── MaskUtil.java
         │   ├── model/
         │   │   ├── AuditData.java
+        │   │   ├── ApiLogCapturedEvent.java
+        │   │   ├── CapturedApiLogEvent.java
         │   │   ├── RequestData.java
         │   │   └── ResponseData.java
+        │   ├── repository/
+        │   │   └── TemporaryH2CaptureStore.java
+        │   ├── resolver/
+        │   │   ├── ApiExceptionLoggingResolver.java
+        │   │   ├── AuditAuthenticationResolver.java
+        │   │   └── LogEventSourceResolver.java
         │   ├── service/
+        │   │   ├── ApiExceptionCaptureManager.java
         │   │   ├── AuditPublisher.java
         │   │   └── impl/DefaultAuditPublisher.java
         │   └── util/
-        │       ├── AuditAuthenticationResolver.java
         │       ├── Constants.java
         │       └── StringUtil.java
         └── resources/META-INF/spring/
@@ -503,11 +589,25 @@ Os testes usam JUnit 5 e Mockito. O JaCoCo gera o relatório de cobertura em:
 target/site/jacoco/index.html
 ```
 
-A suíte cobre os componentes de mascaramento, inspeção de objetos, aspecto de auditoria, carregamento de campos sensíveis, resolução de autenticação, configuração, modelos e publicação.
+A suíte cobre mascaramento e limites da inspeção de objetos, isolamento do aspecto em relação ao fluxo de negócio, carregamento de campos sensíveis, resolução de autenticação, configuração, modelos, publicação de eventos de log, fila limitada, gravação/consulta H2 e expiração da sessão.
+
+A captura temporária não usa entidades ORM: `TemporaryH2CaptureStore` gerencia o schema e as operações JDBC da base H2 em memória. Por isso, não há pacote `entity` nesta implementação. Os objetos HTTP de entrada e saída ficam no pacote `dto`, a coordenação da sessão no pacote `service`, e a integração com Logback no pacote `logging`.
 
 ## 14. Versionamento
 
-A versão documentada neste README é `0.0.5`, conforme o `pom.xml` fornecido.
+A versão documentada neste README é `0.2.0`, conforme o `pom.xml` fornecido.
+
+### Alterações da versão 0.2.0
+
+- Migração do `groupId` para `com.siquaras` e dos pacotes Java para `com.siquaras.auditlog`.
+- Renomeação dos pacotes internos por responsabilidade (`controller`, `dto`, `logging`, `repository`, `resolver` e `service`).
+- Atualização dos exemplos de instalação e dependência para as novas coordenadas Maven.
+- Captura temporária de logs e exceções em H2, controlada em tempo de execução por endpoint.
+- Inclusão de `sourceClass` e `sourceMethod` para identificar a origem de logs e exceções capturados.
+- Limites para fila, tamanho dos eventos e armazenamento em memória.
+- Falhas de auditoria isoladas do resultado e das exceções das operações de negócio.
+- Sanitização de coleções e proteção contra referências cíclicas na inspeção de objetos.
+- Dependências Spring Boot e Jackson alinhadas pelo BOM do Spring Boot.
 
 Ao publicar uma nova versão:
 
@@ -529,4 +629,4 @@ Ao publicar uma nova versão:
 
 ---
 
-**Documento atualizado para a versão `0.0.5`, conforme o `pom.xml` atual.** Endereço do repositório GIS, instruções corporativas de credenciais e política oficial de publicação Maven devem ser preenchidos pela equipe responsável pelo ambiente.
+**Documento atualizado para a versão `0.2.0`, conforme o `pom.xml` atual.** Endereço do repositório GIS, instruções corporativas de credenciais e política oficial de publicação Maven devem ser preenchidos pela equipe responsável pelo ambiente.
