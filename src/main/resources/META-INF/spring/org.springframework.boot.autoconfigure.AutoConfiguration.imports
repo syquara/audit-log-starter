@@ -1,1 +1,2 @@
 com.auditlog.starter.configuration.AuditAutoConfiguration
+com.auditlog.starter.configuration.ApiExceptionLoggingConfiguration

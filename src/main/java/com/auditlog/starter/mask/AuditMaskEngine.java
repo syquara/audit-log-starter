@@ -7,30 +7,29 @@ public final class AuditMaskEngine {
 
     public static Object mask(Object key, Object value) {
 
-        if (key == null || value == null) {
+        if (value == null) {
             return null;
         }
 
-        String keyParam = String.valueOf(key);
         String valueParam = String.valueOf(value);
 
-        if (MaskDetector.isSensitiveField(keyParam)) {
+        if (key != null && MaskDetector.isSensitiveField(String.valueOf(key))) {
             return MaskUtil.maskSensitiveFiled(valueParam);
         }
 
-        if (MaskDetector.isCpf(keyParam) || MaskDetector.isCpf(valueParam)) {
+        if (MaskDetector.isCpf(valueParam)) {
             return MaskUtil.maskCpf(valueParam);
         }
 
-        if (MaskDetector.isCnpj(keyParam) || MaskDetector.isCnpj(valueParam)) {
+        if (MaskDetector.isCnpj(valueParam)) {
             return MaskUtil.maskCnpj(valueParam);
         }
 
-        if (MaskDetector.isEmail(keyParam) || MaskDetector.isEmail(valueParam)) {
+        if (MaskDetector.isEmail(valueParam)) {
             return MaskUtil.maskEmail(valueParam);
         }
 
-        if (MaskDetector.isPhone(keyParam) || MaskDetector.isPhone(valueParam)) {
+        if (MaskDetector.isPhone(valueParam)) {
             return MaskUtil.maskPhone(valueParam);
         }
 

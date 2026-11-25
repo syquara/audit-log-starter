@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder.TestJwtPr
 import org.springframework.security.core.context.SecurityContextHolder.TestSecurityContext;
 
 import com.auditlog.starter.model.RequestData;
+import com.auditlog.starter.resolver.AuditAuthenticationResolver;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 

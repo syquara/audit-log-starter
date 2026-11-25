@@ -100,6 +100,37 @@ class AuditLogAspectTest {
     }
 
     @Test
+    void publisherFailureDoesNotChangeSuccessfulBusinessResult() throws Throwable {
+        AuditPublisher publisher = mock(AuditPublisher.class);
+        org.mockito.Mockito.doThrow(new IllegalStateException("storage down"))
+                .when(publisher).publish(org.mockito.ArgumentMatchers.any(AuditData.class));
+        AuditLogAspect aspect = new AuditLogAspect(publisher);
+        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
+        doReturn(new AuditedService()).when(joinPoint).getTarget();
+        doReturn(mock(MethodSignature.class)).when(joinPoint).getSignature();
+        Result result = new Result("john@example.com");
+        doReturn(result).when(joinPoint).proceed();
+
+        assertSame(result, aspect.execute(joinPoint, disabledPayloadAnnotation()));
+    }
+
+    @Test
+    void publisherFailureDoesNotReplaceOriginalBusinessException() throws Throwable {
+        AuditPublisher publisher = mock(AuditPublisher.class);
+        org.mockito.Mockito.doThrow(new IllegalStateException("storage down"))
+                .when(publisher).publish(org.mockito.ArgumentMatchers.any(AuditData.class));
+        AuditLogAspect aspect = new AuditLogAspect(publisher);
+        ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
+        doReturn(new AuditedService()).when(joinPoint).getTarget();
+        doReturn(mock(MethodSignature.class)).when(joinPoint).getSignature();
+        IllegalArgumentException businessFailure = new IllegalArgumentException("business validation failed");
+        doThrow(businessFailure).when(joinPoint).proceed();
+
+        assertSame(businessFailure, assertThrows(IllegalArgumentException.class,
+                () -> aspect.execute(joinPoint, auditAnnotation())));
+    }
+
+    @Test
     void honorsDisabledRequestAndResponseAndHandlesNullResult() throws Throwable {
         AuditPublisher publisher = mock(AuditPublisher.class);
         AuditLogAspect aspect = new AuditLogAspect(publisher);

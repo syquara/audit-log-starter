@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class AuditMaskEngineTest {
     void keepsOrdinaryValuesAndReturnsNullForNullInput() {
         assertEquals("hello", AuditMaskEngine.mask("message", "hello"));
         assertNull(AuditMaskEngine.mask("message", null));
-        assertNull(AuditMaskEngine.mask(null, "value"));
+        assertEquals("value", AuditMaskEngine.mask(null, "value"));
     }
 
     @Test
@@ -51,6 +52,23 @@ class AuditMaskEngineTest {
         Map<?, ?> customer = (Map<?, ?>) items.get(0);
         assertEquals("*********89", customer.get("cpf"));
         assertEquals("j***@example.com", customer.get("email"));
+    }
+
+    @Test
+    void preservesAndMasksSimpleValuesInsideCollectionsWithoutFieldNames() throws Exception {
+        List<?> values = (List<?>) AuditObjectInspector.sanitize("items",
+                List.of("ordinary", "12345678989", "john@example.com", 7));
+
+        assertEquals(List.of("ordinary", "*********89", "j***@example.com", 7), values);
+    }
+
+    @Test
+    void boundsCyclicObjectGraphsInsteadOfRecursingForever() throws Exception {
+        Map<String, Object> cyclic = new HashMap<>();
+        cyclic.put("self", cyclic);
+
+        Map<?, ?> sanitized = (Map<?, ?>) AuditObjectInspector.sanitize("request", cyclic);
+        assertEquals("[CIRCULAR_REFERENCE]", sanitized.get("self"));
     }
 
     @SuppressWarnings("unused")

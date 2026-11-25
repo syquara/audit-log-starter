@@ -1,11 +1,15 @@
 package com.auditlog.starter.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.auditlog.starter.aspect.AuditLogAspect;
 import com.auditlog.starter.service.AuditPublisher;
@@ -25,6 +29,22 @@ class AuditAutoConfigurationTest {
         assertNotNull(aspect);
         assertSame(publisher, aspectPublisher(aspect));
         assertNotNull(configuration.loadSensitiveFields(mock(org.springframework.core.io.ResourceLoader.class)));
+    }
+
+    @Test
+    void backsOffWhenTheConsumerProvidesAnAuditPublisher() {
+        new ApplicationContextRunner()
+                .withUserConfiguration(ConsumerPublisherConfiguration.class, AuditAutoConfiguration.class)
+                .run(context -> {
+                    assertEquals(1, context.getBeansOfType(AuditPublisher.class).size());
+                    assertSame(context.getBean("consumerPublisher"), context.getBean(AuditPublisher.class));
+                });
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    static class ConsumerPublisherConfiguration {
+        @Bean ObjectMapper objectMapper() { return new ObjectMapper(); }
+        @Bean AuditPublisher consumerPublisher() { return event -> { }; }
     }
 
     private static AuditPublisher aspectPublisher(AuditLogAspect aspect) throws Exception {

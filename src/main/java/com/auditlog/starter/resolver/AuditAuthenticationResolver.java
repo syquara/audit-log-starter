@@ -1,9 +1,10 @@
 
-package com.auditlog.starter.util;
+package com.auditlog.starter.resolver;
 
 import java.lang.reflect.Method;
 
 import com.auditlog.starter.model.RequestData;
+import com.auditlog.starter.util.Constants;
 
 public class AuditAuthenticationResolver {
 
