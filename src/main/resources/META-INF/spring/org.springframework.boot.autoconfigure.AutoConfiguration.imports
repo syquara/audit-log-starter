@@ -1,2 +1,2 @@
-com.auditlog.starter.configuration.AuditAutoConfiguration
-com.auditlog.starter.configuration.ApiExceptionLoggingConfiguration
+com.siquaras.auditlog.configuration.AuditAutoConfiguration
+com.siquaras.auditlog.configuration.ApiExceptionLoggingConfiguration
