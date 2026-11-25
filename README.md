@@ -48,6 +48,16 @@ Requisitos identificados no `pom.xml` desta versão:
 
 Esta versão utiliza `com.fasterxml.jackson.databind.ObjectMapper` (Jackson 2) e dependências Spring Boot 3.5.16. **Não presuma compatibilidade com Spring Boot 4.x**, que utiliza a geração Jackson 3 nas configurações padrão. A compatibilidade com outras versões do Spring Boot deve ser validada antes da adoção.
 
+### Dependências e alertas de segurança
+
+O starter mantém Java 21 e Spring Boot 3.5.16 e sobrescreve as versões abaixo para corrigir os alertas Dependabot recebidos para Tomcat, Jackson e Log4j:
+
+- Tomcat: `10.1.62`.
+- Jackson: `2.21.8`.
+- Log4j: `2.26.1`.
+
+Dois alertas do Spring Framework permanecem sem correção comunitária compatível com Spring Boot 3.5.16: CVE-2026-47884 e CVE-2026-47890. Os patches da linha Spring Framework 6.2 estão disponíveis apenas no Spring Enterprise; não fixe uma versão 6.2.x mais nova manualmente sem acesso e suporte correspondentes. O CVE-2026-47884 só se aplica a aplicações que usam `XsltView` em conjunto com um mapeamento `/**` que renderiza uma view sem nome explícito. O CVE-2026-47890 depende do uso de Server-Sent Events (SSE) com conteúdo de stream controlado por entrada não confiável. O starter não usa diretamente esses recursos; as aplicações consumidoras devem verificar se atendem às condições dos [avisos oficiais do Spring](https://spring.io/security/cve-2026-47884/) e [CVE-2026-47890](https://spring.io/security/cve-2026-47890/), e aplicar as mitigações descritas neles.
+
 A biblioteca foi estruturada para aplicações Spring Boot web/servlet. O código de coleta de contexto HTTP utiliza `HttpServletRequest`.
 
 ## 3. Instalação
@@ -192,7 +202,9 @@ O `pom.xml` do starter declara:
 
 - `spring-boot-starter-web` — versão 3.5.16.
 - `spring-boot-starter-aop` — versão 3.5.16.
-- `jackson-databind` — versão gerenciada pelo BOM do Spring Boot 3.5.16.
+- `jackson-databind` — versão `2.21.8`, gerenciada pelo BOM do Jackson.
+- Tomcat — versão `10.1.62`, incluindo os módulos embed utilizados pelo Spring Boot.
+- Log4j — versão `2.26.1`, gerenciada pelo BOM do Log4j.
 - `h2` — versão 2.5.252, usado pela captura temporária de logs.
 - `lombok` — versão 1.18.48, com escopo `provided`.
 
