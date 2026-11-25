@@ -2,7 +2,7 @@
 
 Biblioteca Spring Boot para registrar eventos de auditoria de métodos de negócio por meio da anotação `@AuditLog`. O starter intercepta a execução do método, coleta informações da operação e publica um registro estruturado em JSON no log da aplicação.
 
-> **Versão documentada:** `0.2.0`  
+> **Versão documentada:** `0.2.1`
 > **GroupId:** `com.siquaras`  
 > **ArtifactId:** `audit-log-starter`
 
@@ -48,6 +48,16 @@ Requisitos identificados no `pom.xml` desta versão:
 
 Esta versão utiliza `com.fasterxml.jackson.databind.ObjectMapper` (Jackson 2) e dependências Spring Boot 3.5.16. **Não presuma compatibilidade com Spring Boot 4.x**, que utiliza a geração Jackson 3 nas configurações padrão. A compatibilidade com outras versões do Spring Boot deve ser validada antes da adoção.
 
+### Dependências e alertas de segurança
+
+O starter mantém Java 21 e Spring Boot 3.5.16 e sobrescreve as versões abaixo para corrigir os alertas Dependabot recebidos para Tomcat, Jackson e Log4j:
+
+- Tomcat: `10.1.62`.
+- Jackson: `2.21.8`.
+- Log4j: `2.26.1`.
+
+Dois alertas do Spring Framework permanecem sem correção comunitária compatível com Spring Boot 3.5.16: CVE-2026-47884 e CVE-2026-47890. Os patches da linha Spring Framework 6.2 estão disponíveis apenas no Spring Enterprise; não fixe uma versão 6.2.x mais nova manualmente sem acesso e suporte correspondentes. O CVE-2026-47884 só se aplica a aplicações que usam `XsltView` em conjunto com um mapeamento `/**` que renderiza uma view sem nome explícito. O CVE-2026-47890 depende do uso de Server-Sent Events (SSE) com conteúdo de stream controlado por entrada não confiável. O starter não usa diretamente esses recursos; as aplicações consumidoras devem verificar se atendem às condições dos [avisos oficiais do Spring](https://spring.io/security/cve-2026-47884/) e [CVE-2026-47890](https://spring.io/security/cve-2026-47890/), e aplicar as mitigações descritas neles.
+
 A biblioteca foi estruturada para aplicações Spring Boot web/servlet. O código de coleta de contexto HTTP utiliza `HttpServletRequest`.
 
 ## 3. Instalação
@@ -91,7 +101,7 @@ Quando o artefato estiver publicado no repositório Maven corporativo, configure
 <dependency>
     <groupId>com.siquaras</groupId>
     <artifactId>audit-log-starter</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
@@ -109,7 +119,7 @@ Na raiz do módulo/projeto consumidor, crie a pasta `libs-repo` e copie para ela
 meu-projeto/
 ├── pom.xml
 ├── libs-repo/
-│   └── audit-log-starter-0.2.0.jar
+│   └── audit-log-starter-0.2.1.jar
 └── src/
     └── main/
         └── resources/
@@ -135,7 +145,7 @@ Mantenha também a dependência:
 <dependency>
     <groupId>com.siquaras</groupId>
     <artifactId>audit-log-starter</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
@@ -147,9 +157,9 @@ Execute o comando abaixo, ajustando a versão e os caminhos para a estrutura rea
 mvn deploy:deploy-file \
   -DgroupId=com.siquaras \
   -DartifactId=audit-log-starter \
-  -Dversion=0.2.0 \
+  -Dversion=0.2.1 \
   -Dpackaging=jar \
-  -Dfile=./libs-repo/audit-log-starter-0.2.0.jar \
+  -Dfile=./libs-repo/audit-log-starter-0.2.1.jar \
   -Durl=file:./libs-repo \
   -DrepositoryId=local-libs-repo
 ```
@@ -157,7 +167,7 @@ mvn deploy:deploy-file \
 No Windows, o comando pode ser executado em uma única linha:
 
 ```bat
-mvn deploy:deploy-file -DgroupId=com.siquaras -DartifactId=audit-log-starter -Dversion=0.2.0 -Dpackaging=jar -Dfile=./libs-repo/audit-log-starter-0.2.0.jar -Durl=file:./libs-repo -DrepositoryId=local-libs-repo
+mvn deploy:deploy-file -DgroupId=com.siquaras -DartifactId=audit-log-starter -Dversion=0.2.1 -Dpackaging=jar -Dfile=./libs-repo/audit-log-starter-0.2.1.jar -Durl=file:./libs-repo -DrepositoryId=local-libs-repo
 ```
 
 Atenção aos parâmetros:
@@ -192,7 +202,9 @@ O `pom.xml` do starter declara:
 
 - `spring-boot-starter-web` — versão 3.5.16.
 - `spring-boot-starter-aop` — versão 3.5.16.
-- `jackson-databind` — versão gerenciada pelo BOM do Spring Boot 3.5.16.
+- `jackson-databind` — versão `2.21.8`, gerenciada pelo BOM do Jackson.
+- Tomcat — versão `10.1.62`, incluindo os módulos embed utilizados pelo Spring Boot.
+- Log4j — versão `2.26.1`, gerenciada pelo BOM do Log4j.
 - `h2` — versão 2.5.252, usado pela captura temporária de logs.
 - `lombok` — versão 1.18.48, com escopo `provided`.
 
@@ -245,7 +257,7 @@ A comparação procura o texto normalizado configurado dentro do nome do campo. 
 
 ### 4.3. Propriedades
 
-A versão `0.2.0` não declara propriedades externas próprias (`@ConfigurationProperties`) para habilitar/desabilitar a auditoria ou configurar destino, nível de log, formato ou comportamento de mascaramento.
+A versão `0.2.1` não declara propriedades externas próprias (`@ConfigurationProperties`) para habilitar/desabilitar a auditoria ou configurar destino, nível de log, formato ou comportamento de mascaramento.
 
 A seleção das operações auditadas é feita diretamente pela anotação `@AuditLog`.
 
@@ -595,7 +607,7 @@ A captura temporária não usa entidades ORM: `TemporaryH2CaptureStore` gerencia
 
 ## 14. Versionamento
 
-A versão documentada neste README é `0.2.0`, conforme o `pom.xml` fornecido.
+A versão documentada neste README é `0.2.1`, conforme o `pom.xml` fornecido.
 
 ### Alterações da versão 0.2.0
 
@@ -608,6 +620,12 @@ A versão documentada neste README é `0.2.0`, conforme o `pom.xml` fornecido.
 - Falhas de auditoria isoladas do resultado e das exceções das operações de negócio.
 - Sanitização de coleções e proteção contra referências cíclicas na inspeção de objetos.
 - Dependências Spring Boot e Jackson alinhadas pelo BOM do Spring Boot.
+
+### Alterações da versão 0.2.1
+
+- Atualização das dependências Tomcat, Jackson e Log4j para versões com correções de segurança.
+- Registro dos alertas Spring ainda pendentes na linha compatível com Spring Boot 3.
+- Compatibilidade mantida com Java 21 e Spring Boot 3.5.16.
 
 Ao publicar uma nova versão:
 
@@ -629,4 +647,4 @@ Ao publicar uma nova versão:
 
 ---
 
-**Documento atualizado para a versão `0.2.0`, conforme o `pom.xml` atual.** Endereço do repositório GIS, instruções corporativas de credenciais e política oficial de publicação Maven devem ser preenchidos pela equipe responsável pelo ambiente.
+**Documento atualizado para a versão `0.2.1`, conforme o `pom.xml` atual.** Endereço do repositório GIS, instruções corporativas de credenciais e política oficial de publicação Maven devem ser preenchidos pela equipe responsável pelo ambiente.
