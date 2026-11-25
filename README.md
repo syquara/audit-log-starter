@@ -2,7 +2,7 @@
 
 Biblioteca Spring Boot para registrar eventos de auditoria de métodos de negócio por meio da anotação `@AuditLog`. O starter intercepta a execução do método, coleta informações da operação e publica um registro estruturado em JSON no log da aplicação.
 
-> **Versão documentada:** `0.2.0`  
+> **Versão documentada:** `0.2.1`
 > **GroupId:** `com.siquaras`  
 > **ArtifactId:** `audit-log-starter`
 
@@ -101,7 +101,7 @@ Quando o artefato estiver publicado no repositório Maven corporativo, configure
 <dependency>
     <groupId>com.siquaras</groupId>
     <artifactId>audit-log-starter</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
@@ -119,7 +119,7 @@ Na raiz do módulo/projeto consumidor, crie a pasta `libs-repo` e copie para ela
 meu-projeto/
 ├── pom.xml
 ├── libs-repo/
-│   └── audit-log-starter-0.2.0.jar
+│   └── audit-log-starter-0.2.1.jar
 └── src/
     └── main/
         └── resources/
@@ -145,7 +145,7 @@ Mantenha também a dependência:
 <dependency>
     <groupId>com.siquaras</groupId>
     <artifactId>audit-log-starter</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
@@ -157,9 +157,9 @@ Execute o comando abaixo, ajustando a versão e os caminhos para a estrutura rea
 mvn deploy:deploy-file \
   -DgroupId=com.siquaras \
   -DartifactId=audit-log-starter \
-  -Dversion=0.2.0 \
+  -Dversion=0.2.1 \
   -Dpackaging=jar \
-  -Dfile=./libs-repo/audit-log-starter-0.2.0.jar \
+  -Dfile=./libs-repo/audit-log-starter-0.2.1.jar \
   -Durl=file:./libs-repo \
   -DrepositoryId=local-libs-repo
 ```
@@ -167,7 +167,7 @@ mvn deploy:deploy-file \
 No Windows, o comando pode ser executado em uma única linha:
 
 ```bat
-mvn deploy:deploy-file -DgroupId=com.siquaras -DartifactId=audit-log-starter -Dversion=0.2.0 -Dpackaging=jar -Dfile=./libs-repo/audit-log-starter-0.2.0.jar -Durl=file:./libs-repo -DrepositoryId=local-libs-repo
+mvn deploy:deploy-file -DgroupId=com.siquaras -DartifactId=audit-log-starter -Dversion=0.2.1 -Dpackaging=jar -Dfile=./libs-repo/audit-log-starter-0.2.1.jar -Durl=file:./libs-repo -DrepositoryId=local-libs-repo
 ```
 
 Atenção aos parâmetros:
@@ -257,7 +257,7 @@ A comparação procura o texto normalizado configurado dentro do nome do campo. 
 
 ### 4.3. Propriedades
 
-A versão `0.2.0` não declara propriedades externas próprias (`@ConfigurationProperties`) para habilitar/desabilitar a auditoria ou configurar destino, nível de log, formato ou comportamento de mascaramento.
+A versão `0.2.1` não declara propriedades externas próprias (`@ConfigurationProperties`) para habilitar/desabilitar a auditoria ou configurar destino, nível de log, formato ou comportamento de mascaramento.
 
 A seleção das operações auditadas é feita diretamente pela anotação `@AuditLog`.
 
@@ -607,7 +607,7 @@ A captura temporária não usa entidades ORM: `TemporaryH2CaptureStore` gerencia
 
 ## 14. Versionamento
 
-A versão documentada neste README é `0.2.0`, conforme o `pom.xml` fornecido.
+A versão documentada neste README é `0.2.1`, conforme o `pom.xml` fornecido.
 
 ### Alterações da versão 0.2.0
 
@@ -620,6 +620,12 @@ A versão documentada neste README é `0.2.0`, conforme o `pom.xml` fornecido.
 - Falhas de auditoria isoladas do resultado e das exceções das operações de negócio.
 - Sanitização de coleções e proteção contra referências cíclicas na inspeção de objetos.
 - Dependências Spring Boot e Jackson alinhadas pelo BOM do Spring Boot.
+
+### Alterações da versão 0.2.1
+
+- Atualização das dependências Tomcat, Jackson e Log4j para versões com correções de segurança.
+- Registro dos alertas Spring ainda pendentes na linha compatível com Spring Boot 3.
+- Compatibilidade mantida com Java 21 e Spring Boot 3.5.16.
 
 Ao publicar uma nova versão:
 
@@ -641,4 +647,4 @@ Ao publicar uma nova versão:
 
 ---
 
-**Documento atualizado para a versão `0.2.0`, conforme o `pom.xml` atual.** Endereço do repositório GIS, instruções corporativas de credenciais e política oficial de publicação Maven devem ser preenchidos pela equipe responsável pelo ambiente.
+**Documento atualizado para a versão `0.2.1`, conforme o `pom.xml` atual.** Endereço do repositório GIS, instruções corporativas de credenciais e política oficial de publicação Maven devem ser preenchidos pela equipe responsável pelo ambiente.
