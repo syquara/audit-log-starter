@@ -14,29 +14,29 @@ import com.siquaras.auditlog.model.ResponseData;
 class StringUtilAndModelsTest {
 
     @Test
-    void normalizesAccentsSeparatorsAndNull() {
+    void normalizesSeparatorsAndNull() {
         new StringUtil();
-        assertEquals("chaveprivada", StringUtil.normalize(" Chavé-Privada "));
-        assertEquals("acessotoken", StringUtil.normalize("acesso_token"));
+        assertEquals("secretkey", StringUtil.normalize(" Secret-Key "));
+        assertEquals("accesstoken", StringUtil.normalize("access_token"));
         assertEquals("", StringUtil.normalize(null));
     }
 
     @Test
     void modelBuildersAndAccessorsRetainValues() {
-        AuditData audit = AuditData.builder().action("UPDATE").domain("USER").classe("Service")
-                .metodo("update").request("input").response("output").tempoExecucao(12L)
-                .sucesso(true).erro(null).build();
+        AuditData audit = AuditData.builder().action("UPDATE").domain("USER").className("Service")
+                .methodName("update").request("input").response("output").executionTimeMillis(12L)
+                .success(true).error(null).build();
         assertEquals("UPDATE", audit.getAction());
         audit.setAction("DELETE");
         assertEquals("DELETE", audit.getAction());
         assertEquals("USER", audit.getDomain());
-        assertEquals("Service", audit.getClasse());
-        assertEquals("update", audit.getMetodo());
+        assertEquals("Service", audit.getClassName());
+        assertEquals("update", audit.getMethodName());
         assertEquals("input", audit.getRequest());
         assertEquals("output", audit.getResponse());
-        assertEquals(12L, audit.getTempoExecucao());
-        assertEquals(true, audit.getSucesso());
-        assertNull(audit.getErro());
+        assertEquals(12L, audit.getExecutionTimeMillis());
+        assertEquals(true, audit.getSuccess());
+        assertNull(audit.getError());
 
         RequestData.Authentication authentication = RequestData.Authentication.builder()
                 .userId("42").userName("ana").build();

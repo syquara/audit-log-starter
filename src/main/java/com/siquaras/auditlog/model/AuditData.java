@@ -11,18 +11,18 @@ public class AuditData {
 
     private String domain;
 
-    private String classe;
+    private String className;
 
-    private String metodo;
+    private String methodName;
 
     private Object request;
 
     private Object response;
 
-    private Long tempoExecucao;
+    private Long executionTimeMillis;
 
-    private Boolean sucesso;
+    private Boolean success;
 
-    private String erro;
+    private String error;
 
 }

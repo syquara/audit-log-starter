@@ -60,10 +60,10 @@ public class AuditLogAspect {
 		try {
 			
 			publisher.publish(AuditData.builder().action(auditLog.action()).domain(auditLog.domain())
-					.classe(joinPoint.getTarget().getClass().getName()).metodo(joinPoint.getSignature().getName())
+					.className(joinPoint.getTarget().getClass().getName()).methodName(joinPoint.getSignature().getName())
 					.request(auditLog.logRequest() ? obtainRequestData(joinPoint) : null)
 					.response(auditLog.logResponse() ? obtainResponseData(result) : null)
-					.tempoExecucao(System.currentTimeMillis() - startedAt).sucesso(true).build());
+					.executionTimeMillis(System.currentTimeMillis() - startedAt).success(true).build());
 			
 		} catch (Exception auditFailure) {
 			LOGGER.warn("Audit event could not be published; business result will be returned.", auditFailure);
@@ -76,8 +76,8 @@ public class AuditLogAspect {
 		try {
 			
 			publisher.publish(AuditData.builder().action(auditLog.action()).domain(auditLog.domain())
-					.classe(joinPoint.getTarget().getClass().getName()).metodo(joinPoint.getSignature().getName())
-					.sucesso(false).erro(failure.getMessage()).tempoExecucao(System.currentTimeMillis() - startedAt)
+					.className(joinPoint.getTarget().getClass().getName()).methodName(joinPoint.getSignature().getName())
+					.success(false).error(failure.getMessage()).executionTimeMillis(System.currentTimeMillis() - startedAt)
 					.build());
 			
 		} catch (RuntimeException auditFailure) {

@@ -75,14 +75,14 @@ public class AuditAuthenticationResolver {
                     }
 
                 } catch (NoSuchMethodException ignored) {
-                    // Principal não é um JWT.
+                    // Principal is not a JWT.
                 }
             }
 
         } catch (ClassNotFoundException ignored) {
-            // Consumidor não utiliza Spring Security.
+            // The consuming application does not use Spring Security.
         } catch (Exception e) {
-            // Falha na leitura da autenticação não deve impedir a auditoria.
+            // Authentication lookup failures must not prevent audit logging.
         }
 
         return build(userId, userName);

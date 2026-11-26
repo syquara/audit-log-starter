@@ -64,9 +64,9 @@ class AuditLogAspectTest {
         AuditData audit = event.getValue();
         assertEquals("CREATE_CUSTOMER", audit.getAction());
         assertEquals("CUSTOMER", audit.getDomain());
-        assertEquals("createCustomer", audit.getMetodo());
-        assertTrue(audit.getSucesso());
-        assertNotNull(audit.getTempoExecucao());
+        assertEquals("createCustomer", audit.getMethodName());
+        assertTrue(audit.getSuccess());
+        assertNotNull(audit.getExecutionTimeMillis());
 
         RequestData request = (RequestData) audit.getRequest();
         assertEquals("*********89", ((java.util.Map<?, ?>) request.getBody()).get("cpf"));
@@ -93,8 +93,8 @@ class AuditLogAspectTest {
 
         org.mockito.ArgumentCaptor<AuditData> event = org.mockito.ArgumentCaptor.forClass(AuditData.class);
         verify(publisher).publish(event.capture());
-        assertFalse(event.getValue().getSucesso());
-        assertEquals("invalid customer", event.getValue().getErro());
+        assertFalse(event.getValue().getSuccess());
+        assertEquals("invalid customer", event.getValue().getError());
         assertNull(event.getValue().getRequest());
         assertNull(event.getValue().getResponse());
     }
