@@ -55,8 +55,8 @@ class AuditAuthenticationResolverTest {
 
     @Test
     void worksWhenSpringSecurityIsNotOnTheRuntimeClasspath() throws Exception {
-        URL classes = AuditAuthenticationResolver.class.getProtectionDomain().getCodeSource().getLocation();
-        try (URLClassLoader withoutSecurity = new URLClassLoader(new URL[] {classes}, getClass().getClassLoader()) {
+        URL classNames = AuditAuthenticationResolver.class.getProtectionDomain().getCodeSource().getLocation();
+        try (URLClassLoader withoutSecurity = new URLClassLoader(new URL[] {classNames}, getClass().getClassLoader()) {
             @Override
             protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
                 if (name.equals(AuditAuthenticationResolver.class.getName())) {

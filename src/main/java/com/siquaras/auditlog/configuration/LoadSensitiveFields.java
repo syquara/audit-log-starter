@@ -28,10 +28,10 @@ public class LoadSensitiveFields {
 	
 	@PostConstruct
     public void init() {
-        carregarSensiteFieldsTxt();
+		loadSensitiveFields();
     }
-	
-	public void carregarSensiteFieldsTxt() {
+
+	public void loadSensitiveFields() {
 		Resource resource = resourceLoader.getResource("classpath:sensitive_fields.txt");
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
@@ -41,8 +41,8 @@ public class LoadSensitiveFields {
 						  .filter(s -> !s.isBlank())
 						  .forEach(sensitiveFields::add);
 		} catch (IOException e) {
-			log.error("Arquivo sensitive_fields.txt está faltando em 'classpath', crie o arquivo com os fields que deja mascarar");
-			log.error("Error: ", e);
+			log.error("sensitive_fields.txt is missing from the classpath; create the file with the fields to mask.");
+			log.error("Failed to load sensitive fields.", e);
 		}
 	}
 

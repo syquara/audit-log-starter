@@ -19,7 +19,7 @@ class DefaultAuditPublisherTest {
         doReturn("{\"action\":\"READ\"}").when(mapper).writeValueAsString(org.mockito.ArgumentMatchers.any());
 
         assertDoesNotThrow(() -> new DefaultAuditPublisher(mapper).publish(
-                AuditData.builder().action("READ").sucesso(true).build()));
+                AuditData.builder().action("READ").success(true).build()));
     }
 
     @Test

@@ -27,7 +27,7 @@ public class DefaultAuditPublisher implements AuditPublisher {
 
         } catch (Exception e) {
         	
-            LOGGER.error("Erro ao gerar audit", e);
+            LOGGER.error("Failed to serialize audit event", e);
 
         }
     }

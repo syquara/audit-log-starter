@@ -41,7 +41,7 @@ class LoadSensitiveFieldsTest {
         doReturn(resource).when(loader).getResource("classpath:sensitive_fields.txt");
         doReturnThrowingIOException(resource);
 
-        new LoadSensitiveFields(loader).carregarSensiteFieldsTxt();
+        new LoadSensitiveFields(loader).loadSensitiveFields();
     }
 
     private static void doReturnThrowingIOException(Resource resource) throws IOException {
